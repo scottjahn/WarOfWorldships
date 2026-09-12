@@ -2,15 +2,19 @@
 
 A 3D naval combat game in the style of World of Warships. You command one real
 warship from a camera over its stern, against a fleet of bot-controlled ships,
-earning XP and credits to research your way up a tech tree of 145 real hulls —
-destroyers, cruisers, battleships and submarines from five navies.
+earning XP and credits to research your way up a tech tree of 157 real hulls —
+destroyers, cruisers, battleships, submarines and aircraft carriers across five
+navies — or designing ships of your own in the shipyard.
 
 The 3D view is drawn by a small perspective renderer written from scratch onto a
 plain 2D canvas: no WebGL, no libraries, nothing to install.
 
+**Play it here: https://scottjahn.github.io/WarOfWorldships/**
+
 ## Playing
 
-Double-click `index.html`. That's it — no install, no build step.
+Open the link above, or double-click `index.html` from a local copy. That's it
+— no install, no build step, no dependencies.
 
 If a browser ever objects to running it straight from disk, serve it instead:
 
@@ -21,7 +25,8 @@ node server.js
 then open <http://localhost:8123>.
 
 Progress is saved in the browser's local storage, so keep using the same
-browser on the same computer. "reset progress" at the bottom of the port screen
+browser on the same computer. The hosted copy and a local copy keep separate
+saves, because the browser treats them as different sites. "reset progress" at the bottom of the port screen
 wipes the save and starts over.
 
 ## Controls
@@ -217,7 +222,7 @@ ships earn more per battle.
 
 | File | What is in it |
 | --- | --- |
-| `js/data.js` | The 145-ship roster and the formulas that turn tier and class into statistics |
+| `js/data.js` | The 157-ship roster and the formulas that turn tier and class into statistics |
 | `js/entities.js` | Ships, shells, torpedoes, depth charges, fires, flooding, consumables |
 | `js/battle.js` | Teams, spotting, capture zones, scoring, match end |
 | `js/ai.js` | Bot captains — one behaviour per class |
