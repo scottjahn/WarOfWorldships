@@ -1,0 +1,15 @@
+# local tooling and scratch output, not part of the game
+.claude/
+_shots/
+shot-server.js
+
+# node, if it ever gets used
+node_modules/
+npm-debug.log*
+
+# editors and operating systems
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

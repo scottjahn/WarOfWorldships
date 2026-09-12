@@ -1,0 +1,6 @@
+# Store everything with LF in the repository so the Linux Pages runner and a
+# Windows checkout agree, and diffs stay quiet.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

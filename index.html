@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>War of Worldships</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a2a3d'/%3E%3Cpath d='M4 20h24l-4 6H8z' fill='%23c8d6de'/%3E%3Crect x='13' y='11' width='6' height='8' fill='%238d99a3'/%3E%3Crect x='15' y='5' width='2' height='6' fill='%23f2c14e'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ PORT / MENU ============ -->
+<div id="port" class="screen">
+  <header class="topbar">
+    <div class="brand">WAR OF <span>WORLDSHIPS</span></div>
+    <div class="wallet">
+      <div class="coin"><b id="w-credits">0</b><span>credits</span></div>
+      <div class="coin"><b id="w-xp">0</b><span>free XP</span></div>
+      <div class="coin"><b id="w-battles">0</b><span>battles</span></div>
+      <div class="coin"><b id="w-wins">0</b><span>wins</span></div>
+    </div>
+  </header>
+
+  <div class="port-body">
+    <aside class="fleet">
+      <h2>Your Fleet</h2>
+      <div id="fleet-list"></div>
+    </aside>
+
+    <main class="showcase">
+      <div id="ship-card"></div>
+      <div class="launch">
+        <label>Difficulty
+          <select id="difficulty"></select>
+        </label>
+        <label>Enemies &amp; allies
+          <select id="team-size">
+            <option value="3">3 v 3 — quick</option>
+            <option value="5" selected>5 v 5 — standard</option>
+            <option value="7">7 v 7 — big battle</option>
+          </select>
+        </label>
+        <button id="btn-yard">SHIPYARD</button>
+        <button id="btn-battle" class="big">BATTLE!</button>
+      </div>
+      <div id="diff-blurb"></div>
+    </main>
+
+    <aside class="tree">
+      <h2>Tech Tree</h2>
+      <div class="nation-tabs" id="nation-tabs"></div>
+      <div class="class-tabs" id="class-tabs"></div>
+      <div id="tree-list"></div>
+    </aside>
+  </div>
+
+  <footer class="hints">
+    <b>Controls</b> — click the sea to take the helm, then <b>mouse</b> looks around ·
+    W/S throttle · A/D rudder · <b>left click</b> fire ·
+    <b>1</b> guns (again to swap HE/AP) <b>2</b> torpedoes <b>3</b> depth charges ·
+    <b>Shift</b> binoculars <b>M</b> map view <b>X</b> lock target ·
+    <b>R</b> damage control <b>T</b> repair <b>Y</b> smoke/hydro <b>U</b> engine boost ·
+    <b>C/V</b> submarine dive &amp; surface <b>F</b> sonar ping ·
+    <b>SHIPYARD</b> designs your own ship ·
+    <b>[</b> and <b>]</b> slow down / speed up time (<b>0</b> resets) ·
+    <b>carriers:</b> <b>1/2/3</b> launch rockets / dive / torpedo bombers, mouse flies them,
+    <b>left click</b> attack, <b>F</b> return to the ship
+    <button id="btn-reset">reset progress</button>
+  </footer>
+</div>
+
+<!-- ============ SHIPYARD ============ -->
+<div id="shipyard" class="screen hidden">
+  <header class="topbar">
+    <div class="brand">THE <span>SHIPYARD</span></div>
+    <div id="yard-points">0 points left</div>
+  </header>
+
+  <div class="yard-body">
+    <section class="yard-left">
+      <label class="ylabel">Name her</label>
+      <input id="yard-name" maxlength="24" placeholder="HMS Something" autocomplete="off">
+
+      <label class="ylabel">What kind of ship?</label>
+      <div class="tabs" id="yard-class"></div>
+
+      <label class="ylabel">Which navy?</label>
+      <div class="tabs" id="yard-nation"></div>
+
+      <label class="ylabel">Tier</label>
+      <div class="tabs tiny" id="yard-tier"></div>
+
+      <label class="ylabel">Paint</label>
+      <div class="swatches" id="yard-paint"></div>
+    </section>
+
+    <section class="yard-mid">
+      <canvas id="yard-cv"></canvas>
+      <div class="yard-actions">
+        <button id="yard-back">Back to port</button>
+        <button id="yard-scrap" class="hidden">Scrap her</button>
+        <button id="yard-build" class="big">BUILD HER</button>
+      </div>
+      <div id="yard-cost"></div>
+    </section>
+
+    <section class="yard-right">
+      <label class="ylabel">Spend your points</label>
+      <div id="yard-stats"></div>
+      <p class="yard-tip">Every point you put into one thing is a point you cannot
+      put into another — that is the whole job. A fast, stealthy ship with big guns
+      will be made of paper.</p>
+    </section>
+  </div>
+</div>
+
+<!-- ============ BATTLE ============ -->
+<div id="battle" class="screen hidden">
+  <canvas id="cv"></canvas>
+
+  <div id="hud">
+    <div id="hud-top">
+      <div class="score-team green"><span id="score-green">0</span></div>
+      <div id="timer">15:00</div>
+      <div class="score-team red"><span id="score-red">0</span></div>
+    </div>
+
+    <div id="rosters">
+      <div id="roster-green" class="roster"></div>
+      <div id="roster-red" class="roster"></div>
+    </div>
+
+    <div id="ribbons"></div>
+    <div id="bigmsg"></div>
+    <div id="lockhint"><b>Click to take the helm</b><span>mouse looks around · Esc releases it</span></div>
+
+    <div id="hud-bottom">
+      <div id="ship-status">
+        <div class="hpbar"><i id="hp-fill"></i><span id="hp-text"></span></div>
+        <div id="status-icons"></div>
+      </div>
+      <div id="weapons"></div>
+      <div id="consumables"></div>
+      <div id="throttle">
+        <div class="tl" id="tl-speed">0 kn</div>
+        <div class="tl" id="tl-notch">STOP</div>
+        <div class="tl" id="tl-rudder">RUDDER —</div>
+        <div class="tl" id="tl-depth"></div>
+      </div>
+      <div id="timectl">
+        <button id="t-slower" title="slower  [">&#9664;</button>
+        <span id="t-label">TIME &times;1</span>
+        <button id="t-faster" title="faster  ]">&#9654;</button>
+      </div>
+    </div>
+
+    <canvas id="minimap"></canvas>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="res-card">
+      <h1 id="res-title">VICTORY</h1>
+      <div id="res-lines"></div>
+      <button id="btn-port" class="big">RETURN TO PORT</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/data.js"></script>
+<script src="js/progression.js"></script>
+<script src="js/difficulty.js"></script>
+<script src="js/world.js"></script>
+<script src="js/mesh.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/aircraft.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/render.js"></script>
+<script src="js/shipyard.js"></script>
+<script src="js/yard-ui.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
