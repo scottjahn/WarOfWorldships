@@ -30,6 +30,10 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # create the Pages site on the first run rather than needing
+          # somebody to switch it on by hand in the repository settings
+          enablement: true
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@v3
